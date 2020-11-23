@@ -1,8 +1,8 @@
 package com.eviro.assessment.grad001.nompumelelomsiza.dao;
 
 import com.eviro.assessment.grad001.nompumelelomsiza.domain.Account;
-import com.eviro.assessment.grad001.nompumelelomsiza.domain.CurrentAccount;
-import com.eviro.assessment.grad001.nompumelelomsiza.domain.SavingsAccount;
+import com.eviro.assessment.grad001.nompumelelomsiza.service.CurrentAccount;
+import com.eviro.assessment.grad001.nompumelelomsiza.service.SavingsAccount;
 
 import java.math.BigDecimal;
 import java.util.HashSet;

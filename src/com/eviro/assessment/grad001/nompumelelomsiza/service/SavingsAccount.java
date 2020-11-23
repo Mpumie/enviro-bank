@@ -1,9 +1,9 @@
-package com.eviro.assessment.grad001.nompumelelomsiza.domain;
+package com.eviro.assessment.grad001.nompumelelomsiza.service;
 
 import com.eviro.assessment.grad001.nompumelelomsiza.dao.SystemDB;
+import com.eviro.assessment.grad001.nompumelelomsiza.domain.Account;
 import com.eviro.assessment.grad001.nompumelelomsiza.exception.AccountNotFoundException;
 import com.eviro.assessment.grad001.nompumelelomsiza.exception.WithdrawalAmountTooLargeException;
-import com.eviro.assessment.grad001.nompumelelomsiza.service.AccountService;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -11,16 +11,14 @@ import java.util.Set;
 
 import static com.eviro.assessment.grad001.nompumelelomsiza.constants.Constants.*;
 
-public class CurrentAccount extends Account implements AccountService {
+public class SavingsAccount extends Account implements AccountService {
 
-    private BigDecimal overdraft;
-
-    public CurrentAccount() {
+    public SavingsAccount() {
+        super();
     }
 
-    public CurrentAccount(Long id, Long accountNum, BigDecimal balance, BigDecimal overdraft) {
+    public SavingsAccount(Long id, Long accountNum, BigDecimal balance) {
         super(id, accountNum, balance);
-        this.overdraft = overdraft;
     }
 
     @Override
@@ -29,16 +27,15 @@ public class CurrentAccount extends Account implements AccountService {
             final SystemDB instance = SystemDB.getInstance();
             final Set<Account> accounts = instance.getAccounts();
             final Optional<Account> foundAccount = accounts.stream().filter(account -> account.getAccountNum().equals(accountNum)).findFirst();
-            if (foundAccount.isPresent()) {
-                final CurrentAccount account = (CurrentAccount) foundAccount.get();
-                final BigDecimal overdraft = account.getOverdraft();
 
-                final BigDecimal availableAmountToWithdraw = account.getBalance().add(overdraft);
-                if (availableAmountToWithdraw.compareTo(amountToWithdraw) >= 0) {
-                    // Available balance after withdrawal is sufficient, going through with the withdrawal below
-                    final BigDecimal remainingBalance = availableAmountToWithdraw.subtract(amountToWithdraw);
-                    account.setBalance(remainingBalance);
-                    System.out.println(SUCCESS_MESSAGE + remainingBalance);
+            if (foundAccount.isPresent()) {
+                final Account account = foundAccount.get();
+                final BigDecimal balance = account.getBalance();
+                final BigDecimal balanceAfterWithdrawal = balance.subtract(amountToWithdraw);
+                if (balanceAfterWithdrawal.compareTo(MIN_BALANCE) >= 0) {
+                    // Available balance after withdrawal is sufficient ( >= R1000), going through with the withdrawal below
+                    account.setBalance(balanceAfterWithdrawal);
+                    System.out.println("Remaining balance after withdrawal is: R " + balanceAfterWithdrawal);
                 } else {
                     throw new WithdrawalAmountTooLargeException(INSUFFICIENT_FUNDS);
                 }
@@ -52,13 +49,5 @@ public class CurrentAccount extends Account implements AccountService {
             // Any other unexpected exception is caught here
             System.out.println(TECH_ERROR);
         }
-    }
-
-    public BigDecimal getOverdraft() {
-        return overdraft;
-    }
-
-    public void setOverdraft(BigDecimal overdraft) {
-        this.overdraft = overdraft;
     }
 }

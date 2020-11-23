@@ -1,6 +1,6 @@
 package com.eviro.assessment.grad001.nompumelelomsiza;
 
-import com.eviro.assessment.grad001.nompumelelomsiza.domain.CurrentAccount;
+import com.eviro.assessment.grad001.nompumelelomsiza.service.CurrentAccount;
 import com.eviro.assessment.grad001.nompumelelomsiza.exception.WithdrawalAmountTooLargeException;
 import org.junit.Test;
 
